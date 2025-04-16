@@ -1,13 +1,47 @@
-// Update this page (the content is just a fallback if you fail to update the page)
 
+import React, { useEffect, useState } from "react";
+import Header from "@/components/Header";
+import ChatContainer from "@/components/ChatContainer";
+import InputArea from "@/components/InputArea";
+import SignupModal from "@/components/SignupModal";
+import CosmicBackground from "@/components/CosmicBackground";
+import { ThemeProvider } from "@/context/ThemeContext";
+import { ChatProvider, useChat } from "@/context/ChatContext";
+
+const ChatPage = () => {
+  const { questionCount } = useChat();
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    // When user has asked 3 questions, show the modal
+    if (questionCount >= 3 && !showModal) {
+      setShowModal(true);
+    }
+  }, [questionCount, showModal]);
+
+  return (
+    <>
+      <CosmicBackground />
+      <div className="flex flex-col h-screen">
+        <Header />
+        <main className="flex-1 flex flex-col max-w-3xl w-full mx-auto overflow-hidden">
+          <ChatContainer />
+          <InputArea />
+        </main>
+      </div>
+      <SignupModal isOpen={showModal} onClose={() => setShowModal(false)} />
+    </>
+  );
+};
+
+// Wrapper component to provide context
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <ThemeProvider>
+      <ChatProvider>
+        <ChatPage />
+      </ChatProvider>
+    </ThemeProvider>
   );
 };
 
