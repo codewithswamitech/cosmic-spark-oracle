@@ -1,9 +1,11 @@
 
 import React, { useState } from "react";
-import { X } from "lucide-react";
+import { X, Eye, EyeOff } from "lucide-react";
 import { useChat } from "../context/ChatContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface SignupModalProps {
   isOpen: boolean;
@@ -12,8 +14,11 @@ interface SignupModalProps {
 
 const SignupModal = ({ isOpen, onClose }: SignupModalProps) => {
   const [email, setEmail] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { resetQuestionCount } = useChat();
+  const navigate = useNavigate();
   
   // Detect if on Apple device (iOS/macOS)
   const isAppleDevice = typeof navigator !== 'undefined' && 
@@ -22,21 +27,43 @@ const SignupModal = ({ isOpen, onClose }: SignupModalProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.trim()) {
-      // In a real app, you would handle the sign-up process here
-      setIsSubmitted(true);
-      resetQuestionCount();
+    if (email.trim() && password.trim()) {
+      setIsSubmitting(true);
+      
+      // In a real app, you would handle the sign-up process with a backend
+      // For now, we'll simulate a successful signup
       setTimeout(() => {
+        // Store user data in localStorage
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("userEmail", email);
+        
+        // Reset question count
+        resetQuestionCount();
+        
+        // Show success message
+        toast.success("Sign up successful!");
+        
+        // Close modal and navigate to dashboard
         onClose();
-        setIsSubmitted(false);
+        setIsSubmitting(false);
         setEmail("");
-      }, 2000);
+        setPassword("");
+        
+        // Redirect to dashboard
+        navigate("/dashboard");
+      }, 1500);
+    } else {
+      toast.error("Please fill in all fields");
     }
   };
 
   const handleClose = () => {
     onClose();
     resetQuestionCount();
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   if (!isOpen) return null;
@@ -77,28 +104,55 @@ const SignupModal = ({ isOpen, onClose }: SignupModalProps) => {
             Sign up to continue your celestial journey and unlock personalized readings!
           </p>
           
-          {isSubmitted ? (
+          {isSubmitting ? (
             <div className="text-center py-4 animate-message-fade-in">
               <div className="text-2xl mb-2">🌠</div>
-              <p className="font-medium text-primary">Thank you for joining!</p>
+              <p className="font-medium text-primary">Creating your account...</p>
               <p className="text-sm text-muted-foreground">
-                Your cosmic journey continues...
+                Preparing your cosmic journey
               </p>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <Input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="cosmic-input w-full py-2.5 px-4"
-                  required
-                />
+              <div className="space-y-4">
+                <div>
+                  <Input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="cosmic-input w-full py-2.5 px-4"
+                    required
+                  />
+                </div>
+                
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="cosmic-input w-full py-2.5 px-4 pr-10"
+                    required
+                  />
+                  <button 
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
+                  >
+                    {showPassword ? (
+                      <EyeOff size={18} />
+                    ) : (
+                      <Eye size={18} />
+                    )}
+                    <span className="sr-only">
+                      {showPassword ? "Hide password" : "Show password"}
+                    </span>
+                  </button>
+                </div>
               </div>
               
-              <div className="space-y-3">
+              <div className="mt-6 space-y-3">
                 <Button
                   type="submit"
                   className="w-full bg-cosmic-gradient hover:opacity-90 text-white font-medium py-2.5 px-4 rounded-lg transition-opacity duration-200"

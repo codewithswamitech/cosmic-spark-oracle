@@ -11,12 +11,14 @@ import { ChatProvider, useChat } from "@/context/ChatContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 const ChatPage = () => {
   const { questionCount, showBirthModal, setShowBirthModal, setBirthData } = useChat();
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
   const navigate = useNavigate();
 
@@ -53,6 +55,10 @@ const ChatPage = () => {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   const headerContent = !showLoginForm ? (
     <div className="flex gap-2">
       <Button 
@@ -72,22 +78,40 @@ const ChatPage = () => {
     </div>
   ) : (
     <form onSubmit={handleLogin} className="flex items-center gap-2">
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="rounded px-3 py-1 bg-background border border-input text-sm"
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="rounded px-3 py-1 bg-background border border-input text-sm"
-        required
-      />
+      <div className="relative">
+        <div className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground">
+          <Mail size={16} />
+        </div>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="rounded pl-8 pr-3 py-1 bg-background border border-input text-sm"
+          required
+        />
+      </div>
+      <div className="relative">
+        <div className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground">
+          <Lock size={16} />
+        </div>
+        <input
+          type={showPassword ? "text" : "password"}
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="rounded pl-8 pr-8 py-1 bg-background border border-input text-sm"
+          required
+        />
+        <button 
+          type="button"
+          onClick={togglePasswordVisibility}
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+        >
+          {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+          <span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
+        </button>
+      </div>
       <Button type="submit" size="sm" variant="secondary">Login</Button>
       <Button 
         type="button" 
