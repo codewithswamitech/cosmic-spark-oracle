@@ -54,15 +54,24 @@ const ChatPage = () => {
   };
 
   const headerContent = !showLoginForm ? (
-    <Button 
-      variant="outline" 
-      onClick={() => setShowLoginForm(true)}
-      className="ml-auto"
-    >
-      Sign In
-    </Button>
+    <div className="flex gap-2">
+      <Button 
+        variant="secondary" 
+        onClick={() => {
+          setShowSignupModal(true);
+        }}
+      >
+        Sign Up
+      </Button>
+      <Button 
+        variant="outline" 
+        onClick={() => setShowLoginForm(true)}
+      >
+        Sign In
+      </Button>
+    </div>
   ) : (
-    <form onSubmit={handleLogin} className="ml-auto flex items-center gap-2">
+    <form onSubmit={handleLogin} className="flex items-center gap-2">
       <input
         type="email"
         placeholder="Email"

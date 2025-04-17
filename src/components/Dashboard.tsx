@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useChat } from "@/context/ChatContext";
 import { 
@@ -74,8 +73,8 @@ const getElement = (sign: string): string => {
   return "";
 };
 
-const Dashboard = ({}: DashboardProps) => {
-  const { birthData } = useChat();
+const Dashboard = () => {
+  const { birthData, setShowBirthModal } = useChat();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<string>("dashboard");
   const [isLoading, setIsLoading] = useState(true);
@@ -102,9 +101,25 @@ const Dashboard = ({}: DashboardProps) => {
   
   if (!birthData || !birthData.birthDate) {
     return (
-      <div className="text-center p-8">
-        <p className="mb-4">We need your birth information to generate your cosmic profile.</p>
-        <Button onClick={() => navigate("/")}>Return to Home</Button>
+      <div className="flex flex-col items-center justify-center h-screen bg-background">
+        <div className="text-center max-w-md mx-auto p-6">
+          <h2 className="text-2xl font-bold mb-4">We need your birth information to generate your cosmic profile.</h2>
+          <div className="space-y-4 mt-6">
+            <Button 
+              onClick={() => setShowBirthModal(true)} 
+              className="w-full bg-cosmic-gradient hover:opacity-90"
+            >
+              Enter Birth Information
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate("/")}
+              className="w-full"
+            >
+              Return to Home
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -114,7 +129,6 @@ const Dashboard = ({}: DashboardProps) => {
   const lifePathNumber = getLifePathNumber(new Date(birthData.birthDate));
   const element = getElement(zodiacSign);
   
-  // Sample forecast data (in a real app, this would come from backend)
   const dailyForecast = "Today's moon in Cancer brings reflection — time to pause and center yourself.";
   const loveForecast = "Venus is entering your 7th house, bringing harmonious energy to relationships. A deep conversation tonight could lead to new understanding.";
   const careerForecast = "Push forward your ideas. Mercury aligns with your 10th house, creating favorable conditions for professional advancement.";

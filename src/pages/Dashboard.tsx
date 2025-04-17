@@ -1,16 +1,17 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardComponent from "@/components/Dashboard";
 import { ThemeProvider } from "@/context/ThemeContext";
-import { ChatProvider } from "@/context/ChatContext";
+import { ChatProvider, useChat } from "@/context/ChatContext";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import BirthInfoModal from "@/components/BirthInfoModal";
 
-const DashboardPage = () => {
+const DashboardContent = () => {
   const navigate = useNavigate();
+  const { birthData, setBirthData, setShowBirthModal, showBirthModal } = useChat();
   
-  // Add useEffect to check login status
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
     if (!isLoggedIn) {
@@ -19,6 +20,12 @@ const DashboardPage = () => {
     }
   }, [navigate]);
 
+  const handleBirthDataSubmit = (data: any) => {
+    setBirthData(data);
+    setShowBirthModal(false);
+    toast.success("Profile information updated!");
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
     toast.success("Logged out successfully!");
@@ -26,14 +33,27 @@ const DashboardPage = () => {
   };
 
   return (
+    <>
+      <div className="absolute top-4 right-4 z-50">
+        <Button onClick={handleLogout} variant="outline" size="sm">
+          Logout
+        </Button>
+      </div>
+      <DashboardComponent />
+      <BirthInfoModal 
+        isOpen={showBirthModal} 
+        onClose={() => setShowBirthModal(false)}
+        onSubmit={handleBirthDataSubmit}
+      />
+    </>
+  );
+};
+
+const DashboardPage = () => {
+  return (
     <ThemeProvider>
       <ChatProvider>
-        <div className="absolute top-4 right-4 z-50">
-          <Button onClick={handleLogout} variant="outline" size="sm">
-            Logout
-          </Button>
-        </div>
-        <DashboardComponent />
+        <DashboardContent />
       </ChatProvider>
     </ThemeProvider>
   );
