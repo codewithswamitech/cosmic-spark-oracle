@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import ChatContainer from "@/components/ChatContainer";
@@ -8,7 +7,6 @@ import BirthInfoModal from "@/components/BirthInfoModal";
 import CosmicBackground from "@/components/CosmicBackground";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { ChatProvider, useChat } from "@/context/ChatContext";
-import { BirthData } from "@/components/BirthInfoModal";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -28,7 +26,7 @@ const ChatPage = () => {
     }
   }, [questionCount, showSignupModal]);
 
-  const handleBirthDataSubmit = (data: BirthData) => {
+  const handleBirthDataSubmit = (data: any) => {
     setBirthData(data);
     setShowBirthModal(false);
     // In a real app, you would send this data to your backend
@@ -108,7 +106,6 @@ const ChatPage = () => {
   );
 };
 
-// Wrapper component to provide context
 const Index = () => {
   return (
     <ThemeProvider>

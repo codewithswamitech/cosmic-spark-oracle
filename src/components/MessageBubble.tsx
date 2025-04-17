@@ -1,10 +1,10 @@
 
 import React from "react";
-import { Message } from "../context/ChatContext";
+import { ChatMessage } from "../context/ChatContext";
 import { cn } from "@/lib/utils";
 
 interface MessageBubbleProps {
-  message: Message;
+  message: ChatMessage;
 }
 
 const MessageBubble = ({ message }: MessageBubbleProps) => {
