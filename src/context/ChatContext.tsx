@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useState, useRef, useEffect } from "react";
+import { BirthData } from "@/components/BirthInfoModal";
 
 type MessageType = "user" | "astro";
 
@@ -17,6 +18,10 @@ interface ChatContextType {
   resetQuestionCount: () => void;
   sendUserMessage: (text: string) => void;
   chatContainerRef: React.RefObject<HTMLDivElement>;
+  showBirthModal: boolean;
+  setShowBirthModal: (show: boolean) => void;
+  birthData: BirthData | null;
+  setBirthData: (data: BirthData) => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -30,9 +35,24 @@ const astroResponses = [
   "I sense emotional turbulence in your cosmic field. This is temporary - Saturn's influence will bring stability by month's end.",
 ];
 
+// Keywords that might trigger birth info modal
+const personalInsightKeywords = [
+  "love", "career", "mood", "relationship", "job", "future", "personality", "sign", 
+  "horoscope", "zodiac", "fortune", "prediction"
+];
+
 export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [questionCount, setQuestionCount] = useState(0);
+  const [showBirthModal, setShowBirthModal] = useState(false);
+  const [birthData, setBirthData] = useState<BirthData | null>(() => {
+    // Check if we already have birth data stored
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem("askAstroBirthData");
+      return stored ? JSON.parse(stored) : null;
+    }
+    return null;
+  });
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   // Add a message to the chat
@@ -53,9 +73,22 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   // Reset the question counter
   const resetQuestionCount = () => setQuestionCount(0);
 
+  // Check if message contains personal insight keywords
+  const containsPersonalInsightKeyword = (text: string): boolean => {
+    return personalInsightKeywords.some(keyword => 
+      text.toLowerCase().includes(keyword.toLowerCase())
+    );
+  };
+
   // Send a user message and get a response
   const sendUserMessage = (text: string) => {
     addMessage(text, "user");
+    
+    // Check if we should show birth modal
+    // Show after second question if the question implies personal insight
+    if (questionCount >= 1 && !birthData && containsPersonalInsightKeyword(text)) {
+      setShowBirthModal(true);
+    }
     
     // Simulate typing delay
     setTimeout(() => {
@@ -79,7 +112,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       questionCount,
       resetQuestionCount,
       sendUserMessage,
-      chatContainerRef
+      chatContainerRef,
+      showBirthModal,
+      setShowBirthModal,
+      birthData,
+      setBirthData
     }}>
       {children}
     </ChatContext.Provider>

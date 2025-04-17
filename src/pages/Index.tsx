@@ -4,20 +4,29 @@ import Header from "@/components/Header";
 import ChatContainer from "@/components/ChatContainer";
 import InputArea from "@/components/InputArea";
 import SignupModal from "@/components/SignupModal";
+import BirthInfoModal from "@/components/BirthInfoModal";
 import CosmicBackground from "@/components/CosmicBackground";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { ChatProvider, useChat } from "@/context/ChatContext";
+import { BirthData } from "@/components/BirthInfoModal";
 
 const ChatPage = () => {
-  const { questionCount } = useChat();
-  const [showModal, setShowModal] = useState(false);
+  const { questionCount, showBirthModal, setShowBirthModal, setBirthData } = useChat();
+  const [showSignupModal, setShowSignupModal] = useState(false);
 
   useEffect(() => {
-    // When user has asked 3 questions, show the modal
-    if (questionCount >= 3 && !showModal) {
-      setShowModal(true);
+    // When user has asked 3 questions, show the signup modal
+    if (questionCount >= 3 && !showSignupModal) {
+      setShowSignupModal(true);
     }
-  }, [questionCount, showModal]);
+  }, [questionCount, showSignupModal]);
+
+  const handleBirthDataSubmit = (data: BirthData) => {
+    setBirthData(data);
+    setShowBirthModal(false);
+    // In a real app, you would send this data to your backend
+    console.log("Birth data submitted:", data);
+  };
 
   return (
     <>
@@ -29,7 +38,12 @@ const ChatPage = () => {
           <InputArea />
         </main>
       </div>
-      <SignupModal isOpen={showModal} onClose={() => setShowModal(false)} />
+      <SignupModal isOpen={showSignupModal} onClose={() => setShowSignupModal(false)} />
+      <BirthInfoModal 
+        isOpen={showBirthModal} 
+        onClose={() => setShowBirthModal(false)}
+        onSubmit={handleBirthDataSubmit}
+      />
     </>
   );
 };
