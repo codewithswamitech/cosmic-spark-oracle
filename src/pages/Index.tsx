@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import ChatContainer from "@/components/ChatContainer";
@@ -19,9 +20,16 @@ const ChatPage = () => {
   const [showLoginForm, setShowLoginForm] = useState(false);
   const navigate = useNavigate();
 
+  // Check if user is already logged in
+  useEffect(() => {
+    if (localStorage.getItem("isLoggedIn") === "true") {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
+
   useEffect(() => {
     // When user has asked 3 questions, show the signup modal
-    if (questionCount >= 3 && !showSignupModal) {
+    if (questionCount >= 3 && !showSignupModal && localStorage.getItem("isLoggedIn") !== "true") {
       setShowSignupModal(true);
     }
   }, [questionCount, showSignupModal]);

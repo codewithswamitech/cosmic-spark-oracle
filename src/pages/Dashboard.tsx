@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import DashboardComponent from "@/components/Dashboard";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { ChatProvider } from "@/context/ChatContext";
@@ -9,6 +9,15 @@ import { toast } from "sonner";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
+  
+  // Add useEffect to check login status
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    if (!isLoggedIn) {
+      toast.error("Please login to access the dashboard");
+      navigate("/");
+    }
+  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");

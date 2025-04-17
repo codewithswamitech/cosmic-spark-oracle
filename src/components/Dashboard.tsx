@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { useChat } from "@/context/ChatContext";
 import { 
   Calendar,
@@ -77,12 +78,38 @@ const Dashboard = ({}: DashboardProps) => {
   const { birthData } = useChat();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<string>("dashboard");
+  const [isLoading, setIsLoading] = useState(true);
   
-  if (!birthData || !birthData.birthDate) {
-    return <div className="text-center p-8">Loading your cosmic data...</div>;
+  useEffect(() => {
+    // Simulate data loading
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-background">
+        <div className="text-center">
+          <p className="text-xl mb-4">Loading your cosmic data...</p>
+          <div className="h-1 w-48 bg-cosmic-gradient animate-pulse rounded-full"></div>
+        </div>
+      </div>
+    );
   }
   
-  const firstName = birthData.firstName;
+  if (!birthData || !birthData.birthDate) {
+    return (
+      <div className="text-center p-8">
+        <p className="mb-4">We need your birth information to generate your cosmic profile.</p>
+        <Button onClick={() => navigate("/")}>Return to Home</Button>
+      </div>
+    );
+  }
+  
+  const firstName = birthData.firstName || "Cosmic Friend";
   const zodiacSign = getZodiacSign(new Date(birthData.birthDate));
   const lifePathNumber = getLifePathNumber(new Date(birthData.birthDate));
   const element = getElement(zodiacSign);
