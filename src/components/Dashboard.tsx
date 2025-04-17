@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useChat } from "@/context/ChatContext";
 import { 
   Calendar,
@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface DashboardProps {
   // Props if needed
@@ -72,6 +74,8 @@ const getElement = (sign: string): string => {
 
 const Dashboard = ({}: DashboardProps) => {
   const { birthData } = useChat();
+  const navigate = useNavigate();
+  const [activeSection, setActiveSection] = useState<string>("dashboard");
   
   if (!birthData || !birthData.birthDate) {
     return <div className="text-center p-8">Loading your cosmic data...</div>;
@@ -88,6 +92,193 @@ const Dashboard = ({}: DashboardProps) => {
   const careerForecast = "Push forward your ideas. Mercury aligns with your 10th house, creating favorable conditions for professional advancement.";
   const numerologyVibe = "You're in a Personal Day " + ((new Date().getDate() % 9) || 9) + " — focus on completion and preparing for new beginnings.";
 
+  const handleNavigation = (section: string) => {
+    setActiveSection(section);
+    toast.info(`Navigated to ${section}`);
+    // In a real app, this would navigate to different routes
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    toast.success("Logged out successfully!");
+    navigate("/");
+  };
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case "profile":
+        return (
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-4">User Profile</h2>
+            <div className="bg-card p-6 rounded-lg border border-border">
+              <h3 className="text-xl mb-2">Personal Information</h3>
+              <p><strong>Name:</strong> {firstName}</p>
+              <p><strong>Zodiac Sign:</strong> {zodiacSign}</p>
+              <p><strong>Element:</strong> {element}</p>
+              <p><strong>Life Path Number:</strong> {lifePathNumber}</p>
+            </div>
+          </div>
+        );
+      case "predictions":
+        return (
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-4">Saved Predictions</h2>
+            <div className="bg-card p-6 rounded-lg border border-border">
+              <p className="text-muted-foreground">You haven't saved any predictions yet.</p>
+              <Button className="mt-4">Explore Predictions</Button>
+            </div>
+          </div>
+        );
+      case "upgrade":
+        return (
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-4">Premium Features</h2>
+            <div className="bg-card p-6 rounded-lg border border-border">
+              <h3 className="text-xl mb-2">Unlock Premium</h3>
+              <p className="mb-4">Get access to detailed cosmic insights, personalized readings, and more.</p>
+              <Button className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600">
+                Upgrade Now
+              </Button>
+            </div>
+          </div>
+        );
+      case "settings":
+        return (
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-4">Account Settings</h2>
+            <div className="bg-card p-6 rounded-lg border border-border">
+              <h3 className="text-xl mb-2">Preferences</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span>Email Notifications</span>
+                  <Button variant="outline" size="sm">Enable</Button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Dark Mode</span>
+                  <Button variant="outline" size="sm">Toggle</Button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Language</span>
+                  <Button variant="outline" size="sm">English</Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      default:
+        return (
+          <>
+            <div className="mb-8">
+              <h1 className="text-2xl font-bold">
+                Welcome back, {firstName} 👋
+              </h1>
+              <div className="flex flex-wrap gap-4 mt-3">
+                <div className="bg-secondary/50 px-3 py-1 rounded-full text-sm flex items-center">
+                  {zodiacSign}
+                </div>
+                <div className="bg-secondary/50 px-3 py-1 rounded-full text-sm flex items-center">
+                  Life Path: {lifePathNumber}
+                </div>
+                <div className="bg-secondary/50 px-3 py-1 rounded-full text-sm flex items-center">
+                  Element: {element}
+                </div>
+              </div>
+            </div>
+            
+            {/* Widget Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Daily Energy */}
+              <Card className="cosmic-card overflow-hidden">
+                <div className="h-1 bg-cosmic-gradient w-full" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg flex items-center">
+                    <Calendar className="mr-2 h-5 w-5 text-primary" />
+                    🌞 Daily Energy
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p>{dailyForecast}</p>
+                </CardContent>
+              </Card>
+              
+              {/* Love Forecast */}
+              <Card className="cosmic-card overflow-hidden">
+                <div className="h-1 bg-cosmic-gradient w-full" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg flex items-center">
+                    <Heart className="mr-2 h-5 w-5 text-primary" />
+                    ❤️ Love Forecast
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p>{loveForecast}</p>
+                </CardContent>
+              </Card>
+              
+              {/* Career Signal */}
+              <Card className="cosmic-card overflow-hidden">
+                <div className="h-1 bg-cosmic-gradient w-full" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg flex items-center">
+                    <TrendingUp className="mr-2 h-5 w-5 text-primary" />
+                    📈 Career Signal
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p>{careerForecast}</p>
+                </CardContent>
+              </Card>
+              
+              {/* Numerology Day Vibe */}
+              <Card className="cosmic-card overflow-hidden">
+                <div className="h-1 bg-cosmic-gradient w-full" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg flex items-center">
+                    <Hash className="mr-2 h-5 w-5 text-primary" />
+                    🔢 Numerology Day Vibe
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p>{numerologyVibe}</p>
+                </CardContent>
+              </Card>
+            </div>
+            
+            {/* Sample Insight Cards */}
+            <div className="mt-8">
+              <h2 className="text-xl font-bold mb-4">Your Recent Insights</h2>
+              <div className="flex gap-4 overflow-x-auto pb-4">
+                {/* We'll use the InsightCard component we created */}
+                <div className="min-w-[250px] max-w-[250px]">
+                  <div className="bg-card p-4 rounded-lg border border-border hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="text-primary font-medium">Your Mood Today</div>
+                    <p className="text-sm mt-2 line-clamp-3">
+                      Your emotional energy is glowing — you attract harmony today.
+                    </p>
+                    <div className="text-xs text-muted-foreground mt-2">
+                      Tap to view full card
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="min-w-[250px] max-w-[250px]">
+                  <div className="bg-card p-4 rounded-lg border border-border hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="text-primary font-medium">Your Love Signal</div>
+                    <p className="text-sm mt-2 line-clamp-3">
+                      Venus brings deep connections. Be open to meaningful conversations tonight.
+                    </p>
+                    <div className="text-xs text-muted-foreground mt-2">
+                      Tap to view full card
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        );
+    }
+  };
+
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-background">
       {/* Side Navigation */}
@@ -98,23 +289,51 @@ const Dashboard = ({}: DashboardProps) => {
           </h2>
           
           <nav className="space-y-1">
-            <Button variant="ghost" className="w-full justify-start">
+            <Button 
+              variant={activeSection === "dashboard" ? "secondary" : "ghost"} 
+              className="w-full justify-start"
+              onClick={() => handleNavigation("dashboard")}
+            >
+              <User className="mr-2 h-4 w-4" />
+              Dashboard
+            </Button>
+            <Button 
+              variant={activeSection === "profile" ? "secondary" : "ghost"} 
+              className="w-full justify-start"
+              onClick={() => handleNavigation("profile")}
+            >
               <User className="mr-2 h-4 w-4" />
               Profile
             </Button>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button 
+              variant={activeSection === "predictions" ? "secondary" : "ghost"} 
+              className="w-full justify-start"
+              onClick={() => handleNavigation("predictions")}
+            >
               <Bookmark className="mr-2 h-4 w-4" />
               Saved Predictions
             </Button>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button 
+              variant={activeSection === "upgrade" ? "secondary" : "ghost"} 
+              className="w-full justify-start"
+              onClick={() => handleNavigation("upgrade")}
+            >
               <Crown className="mr-2 h-4 w-4" />
               Upgrade
             </Button>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button 
+              variant={activeSection === "settings" ? "secondary" : "ghost"} 
+              className="w-full justify-start"
+              onClick={() => handleNavigation("settings")}
+            >
               <Settings className="mr-2 h-4 w-4" />
               Settings
             </Button>
-            <Button variant="ghost" className="w-full justify-start text-muted-foreground">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start text-muted-foreground"
+              onClick={handleLogout}
+            >
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </Button>
@@ -125,113 +344,7 @@ const Dashboard = ({}: DashboardProps) => {
       {/* Main Content */}
       <main className="flex-1 p-6 overflow-auto">
         <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold">
-              Welcome back, {firstName} 👋
-            </h1>
-            <div className="flex flex-wrap gap-4 mt-3">
-              <div className="bg-secondary/50 px-3 py-1 rounded-full text-sm flex items-center">
-                {zodiacSign}
-              </div>
-              <div className="bg-secondary/50 px-3 py-1 rounded-full text-sm flex items-center">
-                Life Path: {lifePathNumber}
-              </div>
-              <div className="bg-secondary/50 px-3 py-1 rounded-full text-sm flex items-center">
-                Element: {element}
-              </div>
-            </div>
-          </div>
-          
-          {/* Widget Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Daily Energy */}
-            <Card className="cosmic-card overflow-hidden">
-              <div className="h-1 bg-cosmic-gradient w-full" />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center">
-                  <Calendar className="mr-2 h-5 w-5 text-primary" />
-                  🌞 Daily Energy
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>{dailyForecast}</p>
-              </CardContent>
-            </Card>
-            
-            {/* Love Forecast */}
-            <Card className="cosmic-card overflow-hidden">
-              <div className="h-1 bg-cosmic-gradient w-full" />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center">
-                  <Heart className="mr-2 h-5 w-5 text-primary" />
-                  ❤️ Love Forecast
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>{loveForecast}</p>
-              </CardContent>
-            </Card>
-            
-            {/* Career Signal */}
-            <Card className="cosmic-card overflow-hidden">
-              <div className="h-1 bg-cosmic-gradient w-full" />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center">
-                  <TrendingUp className="mr-2 h-5 w-5 text-primary" />
-                  📈 Career Signal
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>{careerForecast}</p>
-              </CardContent>
-            </Card>
-            
-            {/* Numerology Day Vibe */}
-            <Card className="cosmic-card overflow-hidden">
-              <div className="h-1 bg-cosmic-gradient w-full" />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center">
-                  <Hash className="mr-2 h-5 w-5 text-primary" />
-                  🔢 Numerology Day Vibe
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>{numerologyVibe}</p>
-              </CardContent>
-            </Card>
-          </div>
-          
-          {/* Sample Insight Cards */}
-          <div className="mt-8">
-            <h2 className="text-xl font-bold mb-4">Your Recent Insights</h2>
-            <div className="flex gap-4 overflow-x-auto pb-4">
-              {/* We'll use the InsightCard component we created */}
-              <div className="min-w-[250px] max-w-[250px]">
-                <div className="bg-card p-4 rounded-lg border border-border hover:shadow-md transition-shadow cursor-pointer">
-                  <div className="text-primary font-medium">Your Mood Today</div>
-                  <p className="text-sm mt-2 line-clamp-3">
-                    Your emotional energy is glowing — you attract harmony today.
-                  </p>
-                  <div className="text-xs text-muted-foreground mt-2">
-                    Tap to view full card
-                  </div>
-                </div>
-              </div>
-              
-              <div className="min-w-[250px] max-w-[250px]">
-                <div className="bg-card p-4 rounded-lg border border-border hover:shadow-md transition-shadow cursor-pointer">
-                  <div className="text-primary font-medium">Your Love Signal</div>
-                  <p className="text-sm mt-2 line-clamp-3">
-                    Venus brings deep connections. Be open to meaningful conversations tonight.
-                  </p>
-                  <div className="text-xs text-muted-foreground mt-2">
-                    Tap to view full card
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          {renderContent()}
         </div>
       </main>
     </div>
