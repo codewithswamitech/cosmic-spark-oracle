@@ -47,49 +47,52 @@ const ChatPage = () => {
     }
   };
 
+  const headerContent = !showLoginForm ? (
+    <Button 
+      variant="outline" 
+      onClick={() => setShowLoginForm(true)}
+      className="ml-auto"
+    >
+      Sign In
+    </Button>
+  ) : (
+    <form onSubmit={handleLogin} className="ml-auto flex items-center gap-2">
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="rounded px-3 py-1 bg-background border border-input text-sm"
+        required
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className="rounded px-3 py-1 bg-background border border-input text-sm"
+        required
+      />
+      <Button type="submit" size="sm" variant="secondary">Login</Button>
+      <Button 
+        type="button" 
+        size="sm" 
+        variant="ghost" 
+        onClick={() => setShowLoginForm(false)}
+      >
+        Cancel
+      </Button>
+    </form>
+  );
+
   return (
     <>
       <CosmicBackground />
       <div className="flex flex-col h-screen">
-        <Header>
-          {!showLoginForm ? (
-            <Button 
-              variant="outline" 
-              onClick={() => setShowLoginForm(true)}
-              className="ml-auto"
-            >
-              Sign In
-            </Button>
-          ) : (
-            <form onSubmit={handleLogin} className="ml-auto flex items-center gap-2">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="rounded px-3 py-1 bg-background border border-input text-sm"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="rounded px-3 py-1 bg-background border border-input text-sm"
-                required
-              />
-              <Button type="submit" size="sm" variant="secondary">Login</Button>
-              <Button 
-                type="button" 
-                size="sm" 
-                variant="ghost" 
-                onClick={() => setShowLoginForm(false)}
-              >
-                Cancel
-              </Button>
-            </form>
-          )}
-        </Header>
+        <Header />
+        <div className="absolute top-4 right-4 z-40">
+          {headerContent}
+        </div>
         <main className="flex-1 flex flex-col max-w-3xl w-full mx-auto overflow-hidden">
           <ChatContainer />
           <InputArea />
