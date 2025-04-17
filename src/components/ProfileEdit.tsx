@@ -11,9 +11,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 
-interface ProfileData {
+// Define the interface for form data separately from BirthData
+interface ProfileFormData {
   firstName: string;
-  birthDate: string;
   birthTime: string;
   birthPlace: string;
   partnerName: string;
@@ -30,9 +30,8 @@ export const ProfileEdit = () => {
     birthData?.birthDate ? new Date(birthData.birthDate) : undefined
   );
   
-  const [formData, setFormData] = useState<ProfileData>({
+  const [formData, setFormData] = useState<ProfileFormData>({
     firstName: birthData?.firstName || "",
-    birthDate: birthData?.birthDate || "",
     birthTime: birthData?.birthTime || "",
     birthPlace: birthData?.birthPlace || "",
     partnerName: birthData?.partnerName || "",
@@ -52,24 +51,23 @@ export const ProfileEdit = () => {
 
   const handleDateChange = (date: Date | undefined) => {
     setSelectedDate(date);
-    if (date) {
-      setFormData((prev) => ({
-        ...prev,
-        birthDate: date.toISOString(),
-      }));
-    }
   };
 
   const handleSave = () => {
-    // Update the birth data in context
+    // Update the birth data in context with the correct types
     if (setBirthData) {
       setBirthData({
-        ...birthData,
         ...formData,
+        birthDate: selectedDate || null,
       });
     }
     
-    localStorage.setItem("profileData", JSON.stringify(formData));
+    // Store data in localStorage (we need to convert Date to string for storage)
+    const storageData = {
+      ...formData,
+      birthDate: selectedDate ? selectedDate.toISOString() : null,
+    };
+    localStorage.setItem("profileData", JSON.stringify(storageData));
     setIsEditing(false);
     toast.success("Profile saved successfully!");
   };
@@ -78,13 +76,23 @@ export const ProfileEdit = () => {
   React.useEffect(() => {
     const storedData = localStorage.getItem("profileData");
     if (storedData) {
-      const parsedData = JSON.parse(storedData);
-      setFormData({
-        ...formData,
-        ...parsedData,
-      });
-      if (parsedData.birthDate) {
-        setSelectedDate(new Date(parsedData.birthDate));
+      try {
+        const parsedData = JSON.parse(storedData);
+        setFormData({
+          firstName: parsedData.firstName || "",
+          birthTime: parsedData.birthTime || "",
+          birthPlace: parsedData.birthPlace || "",
+          partnerName: parsedData.partnerName || "",
+          houseNumber: parsedData.houseNumber || "",
+          mobileNumber: parsedData.mobileNumber || "",
+          alternateNumber: parsedData.alternateNumber || "",
+          vehicleNumber: parsedData.vehicleNumber || "",
+        });
+        if (parsedData.birthDate) {
+          setSelectedDate(new Date(parsedData.birthDate));
+        }
+      } catch (error) {
+        console.error("Error parsing profile data from localStorage:", error);
       }
     }
   }, []);
