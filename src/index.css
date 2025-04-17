@@ -102,3 +102,27 @@
 .pulse-animation {
   animation: pulse 2s infinite;
 }
+
+/* Enhanced cosmic input styling */
+.cosmic-input {
+  @apply bg-transparent focus:outline-none;
+  box-shadow: 0 0 15px rgba(155, 135, 245, 0.2);
+}
+
+.cosmic-input:focus {
+  box-shadow: 0 0 20px rgba(155, 135, 245, 0.4);
+}
+
+/* Glowing effect for suggestion chips */
+@keyframes suggestion-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(155, 135, 245, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(155, 135, 245, 0.7);
+  }
+}
+
+.suggestion-glow {
+  animation: suggestion-glow 2s infinite ease-in-out;
+}
