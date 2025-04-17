@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useChat } from "@/context/ChatContext";
 import { 
@@ -16,6 +15,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { ProfileEdit } from "./ProfileEdit";
+import { UpgradePlans } from "./UpgradePlans";
 
 interface DashboardProps {
   // Props if needed
@@ -107,18 +108,7 @@ const Dashboard = ({}: DashboardProps) => {
   const renderContent = () => {
     switch (activeSection) {
       case "profile":
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">User Profile</h2>
-            <div className="bg-card p-6 rounded-lg border border-border">
-              <h3 className="text-xl mb-2">Personal Information</h3>
-              <p><strong>Name:</strong> {firstName}</p>
-              <p><strong>Zodiac Sign:</strong> {zodiacSign}</p>
-              <p><strong>Element:</strong> {element}</p>
-              <p><strong>Life Path Number:</strong> {lifePathNumber}</p>
-            </div>
-          </div>
-        );
+        return <ProfileEdit />;
       case "predictions":
         return (
           <div className="p-6">
@@ -130,18 +120,7 @@ const Dashboard = ({}: DashboardProps) => {
           </div>
         );
       case "upgrade":
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Premium Features</h2>
-            <div className="bg-card p-6 rounded-lg border border-border">
-              <h3 className="text-xl mb-2">Unlock Premium</h3>
-              <p className="mb-4">Get access to detailed cosmic insights, personalized readings, and more.</p>
-              <Button className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600">
-                Upgrade Now
-              </Button>
-            </div>
-          </div>
-        );
+        return <UpgradePlans />;
       case "settings":
         return (
           <div className="p-6">
