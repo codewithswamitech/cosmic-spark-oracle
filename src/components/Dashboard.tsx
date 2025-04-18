@@ -9,9 +9,10 @@ import {
   Bookmark,
   Crown,
   Settings,
-  LogOut
+  LogOut,
+  Plus,
+  MessageSquare
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -45,14 +46,12 @@ const getLifePathNumber = (birthDate: Date): number => {
   const month = birthDate.getMonth() + 1;
   const year = birthDate.getFullYear();
   
-  // Convert to string and sum digits
   const dateSum = `${day}`.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
   const monthSum = `${month}`.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
   const yearSum = `${year}`.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
   
   let total = dateSum + monthSum + yearSum;
   
-  // Reduce to a single digit
   while (total > 9) {
     total = `${total}`.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
   }
@@ -74,13 +73,12 @@ const getElement = (sign: string): string => {
 };
 
 const Dashboard = () => {
-  const { birthData, setShowBirthModal } = useChat();
+  const { birthData, setShowBirthModal, clearMessages, resetQuestionCount } = useChat();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<string>("dashboard");
   const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    // Simulate data loading
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1000);
@@ -137,13 +135,19 @@ const Dashboard = () => {
   const handleNavigation = (section: string) => {
     setActiveSection(section);
     toast.info(`Navigated to ${section}`);
-    // In a real app, this would navigate to different routes
   };
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
     toast.success("Logged out successfully!");
     navigate("/");
+  };
+
+  const handleNewChat = () => {
+    clearMessages();
+    resetQuestionCount();
+    setActiveSection("dashboard");
+    toast.success("Started a new chat!");
   };
 
   const renderContent = () => {
@@ -185,29 +189,36 @@ const Dashboard = () => {
             </div>
           </div>
         );
-      default:
+      case "dashboard":
         return (
           <>
-            <div className="mb-8">
-              <h1 className="text-2xl font-bold">
-                Welcome back, {firstName} 👋
-              </h1>
-              <div className="flex flex-wrap gap-4 mt-3">
-                <div className="bg-secondary/50 px-3 py-1 rounded-full text-sm flex items-center">
-                  {zodiacSign}
-                </div>
-                <div className="bg-secondary/50 px-3 py-1 rounded-full text-sm flex items-center">
-                  Life Path: {lifePathNumber}
-                </div>
-                <div className="bg-secondary/50 px-3 py-1 rounded-full text-sm flex items-center">
-                  Element: {element}
+            <div className="flex justify-between items-center mb-8">
+              <div>
+                <h1 className="text-2xl font-bold">
+                  Welcome back, {firstName} 👋
+                </h1>
+                <div className="flex flex-wrap gap-4 mt-3">
+                  <div className="bg-secondary/50 px-3 py-1 rounded-full text-sm flex items-center">
+                    {zodiacSign}
+                  </div>
+                  <div className="bg-secondary/50 px-3 py-1 rounded-full text-sm flex items-center">
+                    Life Path: {lifePathNumber}
+                  </div>
+                  <div className="bg-secondary/50 px-3 py-1 rounded-full text-sm flex items-center">
+                    Element: {element}
+                  </div>
                 </div>
               </div>
+              <Button
+                onClick={handleNewChat}
+                className="bg-primary hover:bg-primary/90 text-white"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                New Chat
+              </Button>
             </div>
             
-            {/* Widget Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Daily Energy */}
               <Card className="cosmic-card overflow-hidden">
                 <div className="h-1 bg-cosmic-gradient w-full" />
                 <CardHeader className="pb-2">
@@ -221,7 +232,6 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
               
-              {/* Love Forecast */}
               <Card className="cosmic-card overflow-hidden">
                 <div className="h-1 bg-cosmic-gradient w-full" />
                 <CardHeader className="pb-2">
@@ -235,7 +245,6 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
               
-              {/* Career Signal */}
               <Card className="cosmic-card overflow-hidden">
                 <div className="h-1 bg-cosmic-gradient w-full" />
                 <CardHeader className="pb-2">
@@ -249,7 +258,6 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
               
-              {/* Numerology Day Vibe */}
               <Card className="cosmic-card overflow-hidden">
                 <div className="h-1 bg-cosmic-gradient w-full" />
                 <CardHeader className="pb-2">
@@ -264,11 +272,9 @@ const Dashboard = () => {
               </Card>
             </div>
             
-            {/* Sample Insight Cards */}
             <div className="mt-8">
               <h2 className="text-xl font-bold mb-4">Your Recent Insights</h2>
               <div className="flex gap-4 overflow-x-auto pb-4">
-                {/* We'll use the InsightCard component we created */}
                 <div className="min-w-[250px] max-w-[250px]">
                   <div className="bg-card p-4 rounded-lg border border-border hover:shadow-md transition-shadow cursor-pointer">
                     <div className="text-primary font-medium">Your Mood Today</div>
@@ -296,12 +302,20 @@ const Dashboard = () => {
             </div>
           </>
         );
+      default:
+        return (
+          <div className="flex flex-col items-center justify-center h-screen bg-background">
+            <div className="text-center">
+              <p className="text-xl mb-4">Loading your cosmic data...</p>
+              <div className="h-1 w-48 bg-cosmic-gradient animate-pulse rounded-full"></div>
+            </div>
+          </div>
+        );
     }
   };
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-background">
-      {/* Side Navigation */}
       <aside className="lg:w-64 bg-card border-r border-border">
         <div className="p-4">
           <h2 className="text-xl font-bold cosmic-gradient-text mb-6">
@@ -361,7 +375,6 @@ const Dashboard = () => {
         </div>
       </aside>
       
-      {/* Main Content */}
       <main className="flex-1 p-6 overflow-auto">
         <div className="max-w-4xl mx-auto">
           {renderContent()}

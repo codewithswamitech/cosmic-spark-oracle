@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode, useRef } from "react";
 
 // Define Message interface for chat messages
