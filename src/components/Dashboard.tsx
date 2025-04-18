@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useChat } from "@/context/ChatContext";
 import { 
@@ -74,7 +75,7 @@ const getElement = (sign: string): string => {
 };
 
 const Dashboard = () => {
-  const { birthData, setShowBirthModal, clearMessages, resetQuestionCount } = useChat();
+  const { birthData, setShowBirthModal, clearMessages, resetQuestionCount, setShowChat } = useChat();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<string>("dashboard");
   const [isLoading, setIsLoading] = useState(true);
@@ -147,7 +148,7 @@ const Dashboard = () => {
   const handleNewChat = () => {
     clearMessages();
     resetQuestionCount();
-    setActiveSection("dashboard");
+    setShowChat(true);
     toast.success("Started a new chat!");
   };
 

@@ -7,10 +7,12 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import BirthInfoModal from "@/components/BirthInfoModal";
+import ChatContainer from "@/components/ChatContainer";
+import InputArea from "@/components/InputArea";
 
 const DashboardContent = () => {
   const navigate = useNavigate();
-  const { birthData, setBirthData, setShowBirthModal, showBirthModal } = useChat();
+  const { birthData, setBirthData, setShowBirthModal, showBirthModal, showChat, setShowChat } = useChat();
   
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -39,7 +41,26 @@ const DashboardContent = () => {
           Logout
         </Button>
       </div>
-      <DashboardComponent />
+      {showChat ? (
+        <div className="flex flex-col h-screen">
+          <div className="absolute top-4 left-4 z-50">
+            <Button 
+              onClick={() => setShowChat(false)} 
+              variant="ghost" 
+              size="sm"
+              className="flex items-center gap-1"
+            >
+              ← Back to Dashboard
+            </Button>
+          </div>
+          <main className="flex-1 flex flex-col max-w-3xl w-full mx-auto overflow-hidden pt-14">
+            <ChatContainer />
+            <InputArea />
+          </main>
+        </div>
+      ) : (
+        <DashboardComponent />
+      )}
       <BirthInfoModal 
         isOpen={showBirthModal} 
         onClose={() => setShowBirthModal(false)}
