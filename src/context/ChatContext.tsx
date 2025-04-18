@@ -33,6 +33,8 @@ interface ChatContextType {
   sendUserMessage: (message: string) => void;
   showBirthModal: boolean;
   setShowBirthModal: (show: boolean) => void;
+  showChat: boolean;
+  setShowChat: (show: boolean) => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -50,6 +52,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [birthData, setBirthDataState] = useState<BirthData | null>(null);
   const [questionCount, setQuestionCount] = useState<number>(0);
   const [showBirthModal, setShowBirthModal] = useState<boolean>(false);
+  const [showChat, setShowChat] = useState<boolean>(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   // Check if we have stored data
@@ -159,6 +162,8 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         sendUserMessage,
         showBirthModal,
         setShowBirthModal,
+        showChat,
+        setShowChat,
       }}
     >
       {children}
